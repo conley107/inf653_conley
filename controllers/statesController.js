@@ -61,8 +61,8 @@ const getState = async (req, res) => {
         return obj.code === stateAbb;
     });
 
-    if (!st) {
-        return res.status(204).json({ 'message': `State code ${req.params.state} not found` });
+    if (st.length === 0) {
+        return res.json({ 'message': `Invalid state abbreviation parameter` });
     }
     const state = await mergeDB(st);
 
@@ -81,8 +81,10 @@ const getStateProperty = async (req, res) => {
         return obj.code === stateAbb;
     });
 
-    if (!st) {
-        return res.status(204).json({ 'message': `State code ${req.params.state} not found` });
+
+
+    if (st.length === 0) {
+        return res.json({ 'message': `Invalid state abbreviation parameter` });
     }
 
     const state = await mergeDB(st);
@@ -96,15 +98,24 @@ const getStateProperty = async (req, res) => {
             finalReq = {state: state[0].state, nickname: state[0].nickname};
             break;
         case 'population':
-            finalReq = {state: state[0].state, population: state[0].population};
+            const pop = state[0].population.toLocaleString("en-US");
+            console.log(pop);
+            finalReq = {state: state[0].state, population: pop};
             break;
         case 'admission':
             finalReq = {state: state[0].state, admitted: state[0].admission_date};
             break;
         case 'funfact':
-            // Random 0-9
-            const random = Math.floor(Math.random() * (state[0].funfacts.length));
-            finalReq = {state: state[0].state, funfact: state[0].funfacts[random]};
+            if(state[0].funfacts === undefined)
+            {
+                return res.json({ 'message': `No Fun Facts found for ${state[0].state}` });
+            }
+            else{
+                // Random 0-9
+                const random = Math.floor(Math.random() * (state[0].funfacts.length));
+                finalReq = { funfact: state[0].funfacts[random]};
+                // state: state[0].state,
+            }
             break;
         default:
     }
