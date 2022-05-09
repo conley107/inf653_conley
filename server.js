@@ -1,13 +1,15 @@
 require('dotenv').config();
+const cors = require('cors');
 const express = require('express');
 const app = express();
-const path = require('path');
 const mongoose = require('mongoose');
 const connectDB = require('./config/dbConn');
 const PORT = process.env.PORT || 3500;
 
 //Connect to MongoDB
 connectDB();
+
+app.use(cors());
 
 // built-in middleware to handle urlencoded form data
 app.use(express.urlencoded({ extended: false }));
