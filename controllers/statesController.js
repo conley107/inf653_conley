@@ -44,10 +44,15 @@ const deleteState = async (req, res) => {
     const index = req.body.index;
     const stateAbb = req.params.state.toUpperCase();
     const data = await State.findOne({ stateCode: stateAbb }).exec();
-    if (!data || !index) {
-        return res.status(204).json({ 'message': `State code ${stateAbb} not found` });
-    }
-    
+    const st = StateJson.filter(obj => {
+        return obj.code === stateAbb;
+    });
+    if(index === undefined) return res.json({ 'message': 'State fun fact index value required' });
+
+    if(data === null) return res.json({'message': `No Fun Facts found for ${st[0].state}` });
+
+    if(!data.funfacts[index - 1]) return res.json({'message': `No Fun Fact found at that index for ${st[0].state}` });
+
     data.funfacts.splice(index - 1,1);
 
     await data.save();
