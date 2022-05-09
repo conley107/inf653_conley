@@ -66,7 +66,7 @@ const getState = async (req, res) => {
     }
     const state = await mergeDB(st);
 
-    res.json(state);
+    res.json(state[0]);
 }
 
 const getStateProperty = async (req, res) => {
