@@ -4,8 +4,11 @@ const handleStatePost = async (req, res) => {
     const stateAbb = req.params.state.toUpperCase();
     const fact = req.body.funfacts;
     
-    if (!fact) return res.status(400).json({ 'message': 'funFact are required.' });
-
+    if (!fact) return res.status(400).json({ 'message': 'State fun facts value required' });
+    if(!Array.isArray(fact))
+    {
+        return res.status(400).json({ 'message': 'State fun facts value must be an array' });
+    }
     // check for duplicate usernames in the db
     const existing = await StateMon.findOne({ stateCode: stateAbb }).exec();
     
@@ -13,8 +16,9 @@ const handleStatePost = async (req, res) => {
     {   
         const updated = existing.funfacts.concat(fact);
         existing.funfacts = updated;
+        
         await existing.save();
-        res.status(201).json({ 'success': `New fact = ${fact} added!` });
+        res.status(201).json(existing);
     }
     else{
         try 

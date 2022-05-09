@@ -126,9 +126,20 @@ const updateFact = async (req, res) => {
     const index = req.body.index;
     const fact = req.body.funfact;
     const stateAbb = req.params.state.toUpperCase();
-    const data = await State.findOne({ stateCode: stateAbb }).exec();
-    if(!index || !fact) return res.status(204).json({ 'message': 'No fact or index' });
+    const st = StateJson.filter(obj => {
+        return obj.code === stateAbb;
+    });
     
+    const data = await State.findOne({ stateCode: stateAbb }).exec();
+
+    if(index === undefined) return res.json({ 'message': 'State fun fact index value required' });
+    
+    if(fact === undefined) return res.json({ 'message': 'State fun fact value required' });
+    
+    if(data === null) return res.json({'message': `No Fun Facts found for ${st[0].state}` });
+
+    if(!data.funfacts[index - 1]) return res.json({'message': `No Fun Fact found at that index for ${st[0].state}` });
+
     data.funfacts[index - 1] = fact;
     await data.save();
 
